@@ -19,5 +19,5 @@ class GenreSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Category()
+        model = Category
         fields = '__all__'

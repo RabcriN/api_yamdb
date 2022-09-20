@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Category(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
@@ -10,6 +11,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
@@ -18,9 +20,12 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     year = models.DateField()
-    category = models.ForeignKey(Category, null=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey(Category,
+                                 null=True,
+                                 on_delete=models.SET_NULL)
     genre = models.ForeignKey(Genre, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):

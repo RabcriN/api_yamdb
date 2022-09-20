@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from users.models import User
 
 
 class Category(models.Model):
@@ -30,6 +31,7 @@ class Title(models.Model):
     genre = models.ForeignKey(Genre, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
+        return self.name
 
 
 class Review(models.Model):
@@ -41,7 +43,8 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews'
     )
-    score = models.IntegerField(MinValueValidator(1), MaxValueValidator(10))
+    # score = models.IntegerField(MinValueValidator(1), MaxValueValidator(10))
+    # ^^^ В строке выше какая-то ошибка
 
     class Meta:
         verbose_name = 'Отзыв'
@@ -70,4 +73,3 @@ class Comment(models.Model):
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         ordering = ['pub_date']
-        return self.name

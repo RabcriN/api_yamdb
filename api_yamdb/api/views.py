@@ -1,7 +1,7 @@
 from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from .permissions import IsAdminOrReadOnly
-from titles.models import Category, Genre, Title, Comment, Review
+from titles.models import Category, Genre, Title  # Comment, Review
 from .serializers import TitleSerializer, GenreSerializer, CategorySerializer
 from django_filters.rest_framework import DjangoFilterBackend
 

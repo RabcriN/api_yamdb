@@ -15,9 +15,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete',)
     pagination_class = PageNumberPagination
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all().order_by('id')
@@ -28,21 +25,15 @@ class GenreViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'delete',)
     pagination_class = PageNumberPagination
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all().order_by('id')
+    queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     http_method_names = ('get', 'post', 'delete',)
     pagination_class = PageNumberPagination
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

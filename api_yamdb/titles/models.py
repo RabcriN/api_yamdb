@@ -8,7 +8,7 @@ class Category(models.Model):
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Genre(models.Model):
@@ -17,7 +17,7 @@ class Genre(models.Model):
     slug = models.SlugField(unique=True)
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Title(models.Model):
@@ -26,11 +26,10 @@ class Title(models.Model):
     year = models.DateField()
     category = models.ForeignKey(Category,
                                  null=True,
-                                 on_delete=models.SET_NULL)
+                                 on_delete=models.CASCADE)
     genre = models.ForeignKey(Genre, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return self.title
 
 
 class Review(models.Model):
@@ -71,3 +70,4 @@ class Comment(models.Model):
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         ordering = ['pub_date']
+        return self.name

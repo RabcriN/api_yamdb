@@ -1,7 +1,7 @@
 from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from .permissions import IsAdminOrReadOnly
-from titles.models import Category, Genre, Title
+from titles.models import Category, Genre, Title, Comment, Review
 from .serializers import TitleSerializer, GenreSerializer, CategorySerializer
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -43,3 +43,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    pass
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    pass

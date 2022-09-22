@@ -25,6 +25,7 @@ class Title(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     year = models.DateField()
+    description = models.TextField()
     category = models.ForeignKey(Category,
                                  null=True,
                                  on_delete=models.CASCADE)
@@ -43,8 +44,13 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews'
     )
-    # score = models.IntegerField(MinValueValidator(1), MaxValueValidator(10))
-    # ^^^ В строке выше какая-то ошибка
+    score = models.IntegerField(
+        default=0,
+        validators=[
+            MaxValueValidator(100),
+            MinValueValidator(1)
+        ]
+    )
 
     class Meta:
         verbose_name = 'Отзыв'

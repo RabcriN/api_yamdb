@@ -1,5 +1,4 @@
 from django.db import models
-# from django.contrib import admin <--- Зачем этот импорт?
 from django.contrib.auth.models import AbstractUser
 
 ADMIN = 'admin'
@@ -16,10 +15,10 @@ CHOICES = (
 class User(AbstractUser):
     username = models.CharField(max_length=150, blank=False, unique=True)
     email = models.EmailField(
-        'email',
+        verbose_name='email',
+        max_length=150,
         unique=True,
-        max_length=254,
-    ),
+    )
     first_name = models.CharField(max_length=150, blank=True)
     second_name = models.CharField(max_length=150, blank=True)
     bio = models.TextField()
@@ -30,6 +29,8 @@ class User(AbstractUser):
         max_length=50,
     )
     confirmation_code = models.CharField(max_length=255)
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     @property
     def is_admin(self):

@@ -20,7 +20,7 @@ class User(AbstractUser):
         unique=True,
     )
     first_name = models.CharField(max_length=150, blank=True)
-    second_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
     bio = models.TextField()
     role = models.CharField(
         'Статус',
@@ -31,6 +31,13 @@ class User(AbstractUser):
     confirmation_code = models.CharField(max_length=255)
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email']
+
+    def __str__(self):
+        return self.username
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     @property
     def is_admin(self):

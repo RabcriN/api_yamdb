@@ -11,6 +11,11 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+        ordering = ['name']
+
 
 class Genre(models.Model):
     id = models.AutoField(primary_key=True)
@@ -20,6 +25,11 @@ class Genre(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+        ordering = ['name']
+
 
 class Title(models.Model):
     id = models.AutoField(primary_key=True)
@@ -27,13 +37,29 @@ class Title(models.Model):
     year = models.DateField()
     description = models.TextField()
     category = models.ForeignKey(Category,
+                                 on_delete=models.SET_NULL,
                                  null=True,
-                                 on_delete=models.CASCADE)
-    genre = models.ForeignKey(Genre, null=True, on_delete=models.SET_NULL)
+                                 blank=True,
+                                 related_name='titles',
+                                 )
+    genre = models.ManyToManyField(
+        Genre,
+        through='Genre_Title',
+    )
+
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+        ordering = ['name']
+
+
+class Genre_Title(models.Model):
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
-
+        return f' {self.title} {self.genre}'
+# в связи many to many где-то ошибка. Надо найти и исправить. Не создаётся, хотя ошибок нет.
 
 class Review(models.Model):
     author = models.ForeignKey(
@@ -51,6 +77,9 @@ class Review(models.Model):
             MinValueValidator(1)
         ]
     )
+
+    def __str__(self):
+        return self.text[:20]
 
     class Meta:
         verbose_name = 'Отзыв'
@@ -74,6 +103,9 @@ class Comment(models.Model):
     rewiew = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments'
     )
+
+    def __str__(self):
+        return self.text[:20]
 
     class Meta:
         verbose_name = 'Комментарий'

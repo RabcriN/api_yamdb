@@ -3,8 +3,10 @@ from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
 from .permissions import IsAdminOrReadOnly
 from titles.models import Category, Genre, Title, Review
+from users.models import User
 from .serializers import (TitleSerializer, GenreSerializer, CategorySerializer,
-                          ReviewSerializer, CommentSerializer)
+                          ReviewSerializer, CommentSerializer,
+                          SignUpSerializer, UserSerializer)
 from django_filters.rest_framework import DjangoFilterBackend
 
 
@@ -59,3 +61,24 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         pass  # надо дописать создание и сохранение
+
+
+class SignUpViewSet(viewsets.ModelViewSet):
+    serializer_class = SignUpSerializer
+    # это пока просто заглушка для /auth/
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('id')
+    lookup_field = "username"
+    http_method_names = ('get', 'post', 'patch', 'delete',)
+    serializer_class = UserSerializer
+
+
+class UserInfoViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('id')
+    http_method_names = ('get', 'patch',)
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(username=self.request.user.username)

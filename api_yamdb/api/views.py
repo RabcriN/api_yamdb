@@ -10,6 +10,7 @@ from .serializers import (TitleSerializer, GenreSerializer, CategorySerializer,
                           ReviewSerializer, CommentSerializer,
                           SignUpSerializer, UserSerializer)
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Avg
 
 
 class TitleViewSet(viewsets.ModelViewSet):

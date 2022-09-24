@@ -30,12 +30,14 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     year = models.DateField()
     description = models.TextField()
     genre = models.ManyToManyField(Genre,
                                    blank=True,
                                    through='Genre_Title',
+                                   related_name='titles',
                                    )
     category = models.ForeignKey(Category,
                                  on_delete=models.SET_NULL,
@@ -43,12 +45,6 @@ class Title(models.Model):
                                  blank=True,
                                  related_name='titles',
                                  )
-    # genre = models.ForeignKey(Genre,
-    #                           on_delete=models.SET_NULL,
-    #                           null=True,
-    #                           blank=True,
-    #                           related_name='genres',
-    #                           )
 
     class Meta:
         verbose_name = 'Произведение'
@@ -76,7 +72,7 @@ class Review(models.Model):
     score = models.IntegerField(
         default=0,
         validators=[
-            MaxValueValidator(100),
+            MaxValueValidator(10),
             MinValueValidator(1)
         ]
     )
@@ -103,7 +99,7 @@ class Comment(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='comments'
     )
-    rewiew = models.ForeignKey(
+    review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments'
     )
 

@@ -4,7 +4,6 @@ from users.models import User
 
 
 class Category(models.Model):
-    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
@@ -18,7 +17,6 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
 
@@ -32,20 +30,25 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
     year = models.DateField()
     description = models.TextField()
+    genre = models.ManyToManyField(Genre,
+                                   blank=True,
+                                   through='Genre_Title',
+                                   )
     category = models.ForeignKey(Category,
                                  on_delete=models.SET_NULL,
                                  null=True,
                                  blank=True,
                                  related_name='titles',
                                  )
-    genre = models.ManyToManyField(
-        Genre,
-        through='Genre_Title',
-    )
+    # genre = models.ForeignKey(Genre,
+    #                           on_delete=models.SET_NULL,
+    #                           null=True,
+    #                           blank=True,
+    #                           related_name='genres',
+    #                           )
 
     class Meta:
         verbose_name = 'Произведение'
@@ -59,7 +62,7 @@ class Genre_Title(models.Model):
 
     def __str__(self):
         return f' {self.title} {self.genre}'
-# в связи many to many где-то ошибка. Надо найти и исправить. Не создаётся, хотя ошибок нет.
+
 
 class Review(models.Model):
     author = models.ForeignKey(

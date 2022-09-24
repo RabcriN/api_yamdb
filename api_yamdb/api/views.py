@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters
 from rest_framework.pagination import PageNumberPagination
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsAdminOnly
 from titles.models import Category, Genre, Title, Review
 from users.models import User
 from .serializers import (TitleSerializer, GenreSerializer, CategorySerializer,
@@ -73,12 +73,14 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = "username"
     http_method_names = ('get', 'post', 'patch', 'delete',)
     serializer_class = UserSerializer
+    permission_classes = (IsAdminOnly,)
 
 
 class UserInfoViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('id')
     http_method_names = ('get', 'patch',)
     serializer_class = UserSerializer
+    permission_classes = (IsAdminOnly,)
 
     def get_queryset(self):
         return self.queryset.filter(username=self.request.user.username)

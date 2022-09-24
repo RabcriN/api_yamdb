@@ -8,10 +8,11 @@ from .serializers import (TitleSerializer, GenreSerializer, CategorySerializer,
                           ReviewSerializer, CommentSerializer,
                           SignUpSerializer, UserSerializer)
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Avg
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all().order_by('id')
+    queryset = Title.objects.all().annotate(rating=Avg('reviews__score'))
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter,)
@@ -60,7 +61,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         return review.comments.all()
 
     def perform_create(self, serializer):
-        pass  # надо дописать создание и сохранение
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review, id=title.id)
 
 
 class SignUpViewSet(viewsets.ModelViewSet):

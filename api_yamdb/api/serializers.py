@@ -1,6 +1,7 @@
-from titles.models import Title, Genre, Category, Review, Comment
-from users.models import User
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator, ValidationError
+from titles.models import Category, Comment, Genre, Review, Title
+from users.models import User
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -55,12 +56,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
 
 
-class SignUpSerializer(serializers.ModelSerializer):
-    pass
-
-
 class UserSerializer(serializers.ModelSerializer):
-
+    """Сериализация пользователей со статусом юзера."""
     class Meta:
         fields = (
             'username',
@@ -71,3 +68,38 @@ class UserSerializer(serializers.ModelSerializer):
             'role',
         )
         model = User
+        validators = [
+            UniqueTogetherValidator(
+                queryset=User.objects.all(),
+                fields=['username', 'email']
+            )
+        ]
+
+
+class SignUpSerializer(serializers.ModelSerializer):
+    """Сериализация регистрации пользователя."""
+    class Meta:
+        model = User
+        fields = ('username', 'email',)
+        validators = [
+            UniqueTogetherValidator(
+                queryset=User.objects.all(),
+                fields=['username', 'email']
+            )
+        ]
+
+    def validate_username(self, value):
+        if value.lower() == 'me':
+            raise ValidationError('username не может быть "me"')
+        return value
+
+
+class TokenSerializer(serializers.Serializer):
+    """Сериализация получения токена."""
+    username = serializers.CharField()
+    confirmation_code = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = ['username', 'confirmation_code']
+        ordering = ['username']

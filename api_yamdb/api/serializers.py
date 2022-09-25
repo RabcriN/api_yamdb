@@ -1,13 +1,48 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, ValidationError
-from titles.models import Category, Comment, Genre, Review, Title
+from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('name', 'slug',)
+        model = Category
+
+
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('name', 'slug',)
+        model = Genre
+
+
+class CategoryField(serializers.Field):
+
+    def to_representation(self, value):
+        return CategorySerializer(value).data
+
+    def to_internal_value(self, data):
+        return Category.objects.get(slug=data)
+
+
+class GenreField(serializers.RelatedField):
+
+    def get_queryset(self):
+        return Genre.objects.all()
+
+    def to_representation(self, value):
+        return GenreSerializer(value).data
+
+    def to_internal_value(self, data):
+        return Genre.objects.get(slug=data)
+
+
 class TitleSerializer(serializers.ModelSerializer):
-    category = serializers.ReadOnlyField(source='category.name')
-    genre = serializers.ReadOnlyField(source='genre.name')
-    rating = serializers.IntegerField()
+    genre = GenreField(many=True)
+    rating = serializers.IntegerField(required=False)
+    category = CategoryField()
 
     class Meta:
         fields = (
@@ -20,20 +55,6 @@ class TitleSerializer(serializers.ModelSerializer):
             'category',
         )
         model = Title
-
-
-class GenreSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        fields = ('name', 'slug',)
-        model = Genre
-
-
-class CategorySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        fields = ('name', 'slug',)
-        model = Category
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -50,6 +71,10 @@ class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True,
         slug_field='username')
+
+    def validate(self, data):
+        print('validate', data)
+        return data
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')

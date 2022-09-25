@@ -30,34 +30,34 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=200)
-    year = models.DateField()
-    description = models.TextField()
+    name = models.CharField(max_length=200,
+                            null=False,
+                            blank=False,
+                            verbose_name='Название произведения',
+                            )
+    year = models.IntegerField(verbose_name='Год произведения',)
+    description = models.TextField(null=True,
+                                   blank=True,
+                                   verbose_name='Описание произведения',
+                                   )
     genre = models.ManyToManyField(Genre,
                                    blank=True,
-                                   through='Genre_Title',
-                                   related_name='titles',
+                                   verbose_name='Жанр произведения',
                                    )
     category = models.ForeignKey(Category,
                                  on_delete=models.SET_NULL,
                                  null=True,
-                                 blank=True,
-                                 related_name='titles',
+                                 verbose_name='Категория произведения',
+                                 related_name='titles_category',
                                  )
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
         ordering = ['name']
-
-
-class Genre_Title(models.Model):
-    title = models.ForeignKey(Title, on_delete=models.CASCADE)
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f' {self.title} {self.genre}'
 
 
 class Review(models.Model):
@@ -96,9 +96,6 @@ class Comment(models.Model):
     )
     text = models.TextField()
     pub_date = models.DateTimeField(auto_now_add=True)
-    title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name='comments'
-    )
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments'
     )

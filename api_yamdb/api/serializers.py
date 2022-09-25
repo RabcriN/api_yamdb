@@ -7,13 +7,14 @@ from users.models import User
 class TitleSerializer(serializers.ModelSerializer):
     category = serializers.ReadOnlyField(source='category.name')
     genre = serializers.ReadOnlyField(source='genre.name')
+    rating = serializers.IntegerField()
 
     class Meta:
         fields = (
             'id',
             'name',
             'year',
-            # 'rating'
+            'rating',
             'description',
             'genre',
             'category',

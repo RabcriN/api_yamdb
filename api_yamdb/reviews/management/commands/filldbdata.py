@@ -1,6 +1,7 @@
-from django.core.management.base import BaseCommand
-from reviews.models import User, Category, Genre, Title, Review, Comment
 import csv
+
+from django.core.management.base import BaseCommand
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class Command(BaseCommand):
@@ -27,6 +28,6 @@ class Command(BaseCommand):
             ) as csvfile:
                 reader = csv.DictReader(csvfile, delimiter=",")
                 for row in reader:
-                    model.objects.update_or_create(id=row['id'], defaults=row)
-            print(f'{filename} successfully added to DB')
-        print('DB successfully filled')
+                    model.objects.update_or_create(id=row["id"], defaults=row)
+            print(f"{filename} successfully added to DB")
+        print("DB successfully filled")

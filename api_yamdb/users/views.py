@@ -13,15 +13,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework_simplejwt.views import TokenViewBase
-
 from users.models import User
 
 
 def send_confirmation_code(user):
     """Отправка кода на почту"""
     confirmation_code = default_token_generator.make_token(user)
-    subject = 'Код подтверждения на сервисе YaMDb'
-    message = f'{confirmation_code} - ваш код авторизации на сервисе YaMDb'
+    subject = "Код подтверждения на сервисе YaMDb"
+    message = f"{confirmation_code} - ваш код авторизации на сервисе YaMDb"
     admin_email = settings.DEFAULT_FROM_EMAIL
     user_email = [user.email]
     return send_mail(subject, message, admin_email, user_email)
@@ -29,22 +28,25 @@ def send_confirmation_code(user):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminOnly,)
+    permission_classes = (
+        IsAuthenticated,
+        IsAdminOnly,
+    )
     serializer_class = UserSerializer
     pagination_class = PageNumberPagination
     filter_backends = (SearchFilter,)
-    search_fields = ('username',)
-    lookup_field = 'username'
+    search_fields = ("username",)
+    lookup_field = "username"
 
     @action(
         detail=False,
-        methods=('GET', 'PATCH'),
-        url_path='me',
+        methods=("GET", "PATCH"),
+        url_path="me",
         permission_classes=(IsAuthenticated,),
     )
     def me(self, request):
         """Профайл пользователя."""
-        if request.method == 'GET':
+        if request.method == "GET":
             serializer = UserSerializer(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         # а если PATCH-запрос:
@@ -72,7 +74,8 @@ class APISignup(APIView):
 
 
 class APIGetToken(TokenViewBase):
-    '''Получение JWT-токена.'''
+    """Получение JWT-токена."""
+
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -80,17 +83,17 @@ class APIGetToken(TokenViewBase):
         if not serializer.is_valid():
             return Response(
                 serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST)
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        username = serializer.data['username']
+        username = serializer.data["username"]
         user = get_object_or_404(User, username=username)
-        confirmation_code = serializer.data['confirmation_code']
+        confirmation_code = serializer.data["confirmation_code"]
         if not default_token_generator.check_token(user, confirmation_code):
             return Response(
                 serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST)
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         token = AccessToken.for_user(user)
-        return Response(
-            {'token': str(token)}, status=status.HTTP_200_OK
-        )
+        return Response({"token": str(token)}, status=status.HTTP_200_OK)

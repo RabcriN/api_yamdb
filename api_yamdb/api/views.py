@@ -1,16 +1,18 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
+from titles.models import Category, Genre, Review, Title
+
 from .permissions import (IsAdminOrReadOnly, IsAdminOnly,
                           IsAuthorModeratorAdmin)
-from titles.models import Category, Genre, Title, Review
-from users.models import User
 from .serializers import (TitleSerializer, GenreSerializer, CategorySerializer,
                           ReviewSerializer, CommentSerializer,
                           SignUpSerializer, UserSerializer)
-from django_filters.rest_framework import DjangoFilterBackend
+from users.models import User
 from django.db.models import Avg
+
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -92,3 +94,4 @@ class UserInfoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(username=self.request.user.username)
+

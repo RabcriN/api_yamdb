@@ -75,12 +75,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Title',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=200)),
                 ('year', models.DateField()),
                 ('description', models.TextField()),
                 ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='titles', to='titles.Category')),
-                ('genre', models.ManyToManyField(blank=True, related_name='titles', through='titles.Genre_Title', to='titles.Genre')),
+                ('genre', models.ManyToManyField(blank=True, through='titles.Genre_Title', to='titles.Genre')),
             ],
             options={
                 'verbose_name': 'Произведение',

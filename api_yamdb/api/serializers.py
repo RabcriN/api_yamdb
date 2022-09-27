@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator, ValidationError
 from reviews.models import Category, Comment, Genre, Review, Title
@@ -47,6 +48,8 @@ class TitleSerializer(serializers.ModelSerializer):
     category = CategoryField()
 
     class Meta:
+        # Если дальше поменять на '__all__', то валятся тесты, т.к. не хватает
+        # поля id. К тому же явное лучше неявного.
         fields = (
             "id",
             "name",
@@ -71,15 +74,24 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
-    )
+        read_only=True,
+        slug_field='username')
+    title = serializers.SlugRelatedField(
+        read_only=True, slug_field='name')
 
     def validate(self, data):
-        print("validate", data)
+        request = self.context['request']
+        title_id = self.context['view'].kwargs.get('title_id')
+        title = get_object_or_404(Title, pk=title_id)
+        if request.method == 'POST':
+            if Review.objects.filter(
+                title=title, author=request.user
+            ).exists():
+                raise ValidationError('Only one review is allowed')
         return data
 
     class Meta:
-        fields = ("id", "text", "author", "score", "pub_date")
+        fields = ("id", "text", "author", "score", "pub_date", 'title')
         model = Review
 
 

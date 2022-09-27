@@ -1,11 +1,12 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, serializers, viewsets
+from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
 
+from .filters import TitleFilter
 from .permissions import IsAdminOnly, IsAdminOrReadOnly, IsAuthorModeratorAdmin
 from .serializers import (
     CategorySerializer,
@@ -17,65 +18,38 @@ from .serializers import (
 )
 
 
+class MixinViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    pass
+
+
 class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all().annotate(rating=Avg("reviews__score"))
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (
         DjangoFilterBackend,
         filters.SearchFilter,
     )
-    http_method_names = (
-        "get",
-        "post",
-        "patch",
-        "delete",
-    )
     pagination_class = PageNumberPagination
-
-    def get_queryset(self):
-        queryset = Title.objects.all()
-        category = self.request.query_params.get("category")
-        genre = self.request.query_params.get("genre")
-        name = self.request.query_params.get("name")
-        year = self.request.query_params.get("year")
-
-        if category:
-            queryset = queryset.filter(category__slug=category)
-        if genre:
-            queryset = queryset.filter(genre__slug=genre)
-        if name:
-            queryset = queryset.filter(name__icontains=name)
-        if year:
-            queryset = queryset.filter(year=year)
-        return queryset.annotate(rating=Avg("reviews__score")).order_by("name")
+    filterset_class = TitleFilter
 
 
-class GenreViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
-    queryset = Genre.objects.all().order_by("id")
+class GenreViewSet(MixinViewSet):
+    queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
-    http_method_names = (
-        "get",
-        "post",
-        "delete",
-    )
     lookup_field = "slug"
     pagination_class = PageNumberPagination
 
 
-class CategoryViewSet(
-    mixins.CreateModelMixin,
-    mixins.ListModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
+class CategoryViewSet(MixinViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
@@ -102,10 +76,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs.get("title_id"))
         author = self.request.user
-        if Review.objects.filter(author=author, title=title).count() > 0:
-            raise serializers.ValidationError(
-                "You have allready review this title"
-            )
         serializer.save(author=author, title=title)
 
 
@@ -134,16 +104,3 @@ class UserViewSet(viewsets.ModelViewSet):
     )
     serializer_class = UserSerializer
     permission_classes = (IsAdminOnly,)
-
-
-class UserInfoViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by("id")
-    http_method_names = (
-        "get",
-        "patch",
-    )
-    serializer_class = UserSerializer
-    permission_classes = (IsAdminOnly,)
-
-    def get_queryset(self):
-        return self.queryset.filter(username=self.request.user.username)

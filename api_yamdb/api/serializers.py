@@ -23,24 +23,6 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
 
 
-class CategoryField(serializers.Field):
-    def to_representation(self, value):
-        return CategorySerializer(value).data
-
-    def to_internal_value(self, data):
-        return Category.objects.get(slug=data)
-
-
-class GenreField(serializers.RelatedField):
-    def get_queryset(self):
-        return Genre.objects.all()
-
-    def to_representation(self, value):
-        return GenreSerializer(value).data
-
-    def to_internal_value(self, data):
-        return Genre.objects.get(slug=data)
-
 class TitleReadSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     rating = serializers.IntegerField(required=False)
@@ -50,10 +32,17 @@ class TitleReadSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Title
 
+
 class TitleWriteSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=True, required=False)
+    genre = serializers.SlugRelatedField(
+        many=True,
+        slug_field="slug",
+        queryset=Genre.objects.all()
+    )
     rating = serializers.IntegerField(required=False)
-    category = CategorySerializer(many=False, required=False)
+    category = serializers.SlugRelatedField(
+        slug_field="slug", queryset=Category.objects.all()
+    )
 
     def to_representation(self, instance):
         serializer = TitleReadSerializer(instance)
@@ -62,26 +51,6 @@ class TitleWriteSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Title
-    
-
-# class TitleSerializer(serializers.ModelSerializer):
-#     genre = GenreField(many=True)
-#     rating = serializers.IntegerField(required=False)
-#     category = CategoryField()
-
-#     class Meta:
-#         # Если дальше поменять на '__all__', то валятся тесты, т.к. не хватает
-#         # поля id. К тому же явное лучше неявного.
-#         fields = (
-#             "id",
-#             "name",
-#             "year",
-#             "rating",
-#             "description",
-#             "genre",
-#             "category",
-#         )
-#         model = Title
 
 
 class CommentSerializer(serializers.ModelSerializer):

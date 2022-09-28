@@ -22,8 +22,8 @@ from api.serializers import SignUpSerializer, TokenSerializer, UserSerializer
 from .filters import TitleFilter
 from .permissions import IsAdminOnly, IsAdminOrReadOnly, IsAuthorModeratorAdmin
 from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleSerializer,
-                          UserSerializer)
+                          GenreSerializer, ReviewSerializer, UserSerializer, 
+                          TitleWriteSerializer, TitleReadSerializer)
 
 
 class MixinViewSet(
@@ -37,7 +37,7 @@ class MixinViewSet(
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(rating=Avg("reviews__score"))
-    serializer_class = TitleSerializer
+    # serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (
         DjangoFilterBackend,
@@ -45,6 +45,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     )
     pagination_class = PageNumberPagination
     filterset_class = TitleFilter
+
+    def get_serializer_class(self):        
+        if self.action in ["create", "update"]:
+            return TitleWriteSerializer
+        return TitleReadSerializer
 
 
 class GenreViewSet(MixinViewSet):

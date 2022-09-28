@@ -4,23 +4,57 @@ from .models import Category, Comment, Genre, Review, Title
 
 
 class TitleAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "name",
+        "year",
+        "description",
+        "genre",
+        "category",
+    )
+    list_editable = ("description", "genre", "category")
+    search_fields = ("name", "year", "genre", "category")
+    empty_value_display = "-пусто-"
 
 
 class GenreAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "name",
+        "slug",
+    )
+    list_editable = ("name",)
+    search_fields = ("name", "slug")
 
 
 class ReviewAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "author",
+        "text",
+        "pub_date",
+        "title",
+        "score"
+    )
+    list_editable = ("text",)
+    search_fields = ("author", "text", "pub_date", "title", "score")
 
 
 class CommentAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "author",
+        "text",
+        "pub_date",
+        "review",
+    )
+    list_editable = ("text",)
+    search_fields = ("author", "text", "pub_date", "review")
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        "name",
+        "slug",
+    )
+    list_editable = ("name",)
+    search_fields = ("name", "slug")
 
 
 admin.site.register(Title, TitleAdmin)

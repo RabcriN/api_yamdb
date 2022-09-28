@@ -1,3 +1,4 @@
+from api.permissions import IsAdminOnly
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -16,14 +17,12 @@ from rest_framework_simplejwt.views import TokenViewBase
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
 
-from api.permissions import IsAdminOnly
-from api.serializers import SignUpSerializer, TokenSerializer, UserSerializer
-
 from .filters import TitleFilter
 from .permissions import IsAdminOnly, IsAdminOrReadOnly, IsAuthorModeratorAdmin
 from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleSerializer,
-                          UserSerializer)
+                          GenreSerializer, ReviewSerializer, SignUpSerializer,
+                          TitleReadSerializer, TitleWriteSerializer,
+                          TokenSerializer, UserSerializer)
 
 
 class MixinViewSet(
@@ -37,7 +36,6 @@ class MixinViewSet(
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(rating=Avg("reviews__score"))
-    serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (
         DjangoFilterBackend,
@@ -45,6 +43,11 @@ class TitleViewSet(viewsets.ModelViewSet):
     )
     pagination_class = PageNumberPagination
     filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        if self.action in ["create", "update", "partial_update"]:
+            return TitleWriteSerializer
+        return TitleReadSerializer
 
 
 class GenreViewSet(MixinViewSet):

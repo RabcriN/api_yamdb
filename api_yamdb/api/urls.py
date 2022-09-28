@@ -4,7 +4,6 @@ from rest_framework.routers import DefaultRouter
 from .views import (APIGetToken, APISignup, CategoryViewSet, CommentViewSet,
                     GenreViewSet, ReviewViewSet, TitleViewSet, UserViewSet)
 
-
 router = DefaultRouter()
 router.register("titles", TitleViewSet, basename="titles")
 router.register("genres", GenreViewSet)

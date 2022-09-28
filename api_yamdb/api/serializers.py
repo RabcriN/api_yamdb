@@ -138,11 +138,5 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 class TokenSerializer(serializers.Serializer):
     """Сериализация получения токена."""
-
     username = serializers.CharField()
     confirmation_code = serializers.CharField()
-
-    class Meta:
-        model = User
-        fields = ["username", "confirmation_code"]
-        ordering = ["username"]

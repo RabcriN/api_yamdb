@@ -1,9 +1,9 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from users.views import APIGetToken, APISignup, UserViewSet
 
-from .views import (CategoryViewSet, CommentViewSet,
-                    GenreViewSet, ReviewViewSet, TitleViewSet)
+from .views import (APIGetToken, APISignup, CategoryViewSet, CommentViewSet,
+                    GenreViewSet, ReviewViewSet, TitleViewSet, UserViewSet)
+
 
 router = DefaultRouter()
 router.register("titles", TitleViewSet, basename="titles")

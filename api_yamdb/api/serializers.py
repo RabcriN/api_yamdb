@@ -75,19 +75,19 @@ class CommentSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True,
-        slug_field='username')
+        slug_field="username")
     title = serializers.SlugRelatedField(
-        read_only=True, slug_field='name')
+        read_only=True, slug_field="name")
 
     def validate(self, data):
-        request = self.context['request']
-        title_id = self.context['view'].kwargs.get('title_id')
+        request = self.context["request"]
+        title_id = self.context['view'].kwargs.get("title_id")
         title = get_object_or_404(Title, pk=title_id)
-        if request.method == 'POST':
+        if request.method == "POST":
             if Review.objects.filter(
                 title=title, author=request.user
             ).exists():
-                raise ValidationError('Only one review is allowed')
+                raise ValidationError("Можно оставить только один отзыв!")
         return data
 
     class Meta:

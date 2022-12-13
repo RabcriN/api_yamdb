@@ -13,42 +13,62 @@
 
 ### Как запустить проект:
 
-Клонировать репозиторий и перейти в него в командной строке:
-
+Клонировать репозиторий и перейти в него в командной строке: 
 ```
-git clone https://github.com/RabcriN/infra_sp2
-```
-
-```
-cd infra_sp2
+git clone https://github.com/RabcriN/api_yamdb.git 
 ```
 
-Cобрать и запустить контейнеры
 ```
-docker-compose up -d --build 
-```
-Выполняем миграции:
-```
-docker-compose exec web python manage.py migrate
-```
-Создаём суперюзера:
-```
-docker-compose exec web python manage.py createsuperuser
-```
-Собираем статику:
-
-```
-docker-compose exec web python manage.py collectstatic --no-input 
+cd api_yamdb 
 ```
 
-Админка доступна по адресу:
+
+Cоздать и активировать виртуальное окружение:
+Команда для установки виртуального окружения (Mac/Linux):
+```
+python3 -m venv env
+source venv/bin/activate
+```
+Команда для Windows должна быть такая:
+```
+python -m venv venv
+source venv/Scripts/activate
+```
 
 ```
-http://localhost/admin/
+python -m pip install --upgrade pip
 ```
 
-Полная документация доступна по адресу:
+Установить зависимости из файла requirements.txt:
 
 ```
-http://127.0.0.1:8000/redoc/
+pip install -r requirements.txt
 ```
+
+Перейти в папку проекта:
+```
+cd yatube_api
+```
+
+Выполнить миграции:
+
+```
+python manage.py migrate
+```
+
+Запустить проект:
+
+```
+python manage.py runserver
+```
+
+### Проект будет доступен по адресу:
+```
+http://127.0.0.1:8000/
+```
+
+### Полная документация для API проекта находится по адресу:  
+```
+http://127.0.0.1:8000/redoc/ 
+```
+ 

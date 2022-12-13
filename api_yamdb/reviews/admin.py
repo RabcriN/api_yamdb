@@ -8,10 +8,9 @@ class TitleAdmin(admin.ModelAdmin):
         "name",
         "year",
         "description",
-        "genre",
         "category",
     )
-    list_editable = ("description", "genre", "category")
+    filter_horizontal = ('genre',)
     search_fields = ("name", "year", "genre", "category")
     empty_value_display = "-пусто-"
 
@@ -21,7 +20,6 @@ class GenreAdmin(admin.ModelAdmin):
         "name",
         "slug",
     )
-    list_editable = ("name",)
     search_fields = ("name", "slug")
 
 
@@ -33,7 +31,6 @@ class ReviewAdmin(admin.ModelAdmin):
         "title",
         "score"
     )
-    list_editable = ("text",)
     search_fields = ("author", "text", "pub_date", "title", "score")
 
 
@@ -44,7 +41,6 @@ class CommentAdmin(admin.ModelAdmin):
         "pub_date",
         "review",
     )
-    list_editable = ("text",)
     search_fields = ("author", "text", "pub_date", "review")
 
 
@@ -53,7 +49,6 @@ class CategoryAdmin(admin.ModelAdmin):
         "name",
         "slug",
     )
-    list_editable = ("name",)
     search_fields = ("name", "slug")
 
 

@@ -49,17 +49,7 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         return serializer.data
 
     class Meta:
-        # Если дальше поменять на '__all__', то валятся тесты, т.к. не хватает
-        # поля id. К тому же явное лучше неявного.
-        fields = (
-            "id",
-            "name",
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category",
-        )
+        fields = '__all__'
         model = Title
 
 
@@ -84,11 +74,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         request = self.context["request"]
         title_id = self.context['view'].kwargs.get("title_id")
         title = get_object_or_404(Title, pk=title_id)
-        if request.method == "POST":
-            if Review.objects.filter(
-                title=title, author=request.user
-            ).exists():
-                raise ValidationError("Можно оставить только один отзыв!")
+        if request.method == "POST" and Review.objects.filter(
+            title=title,
+            author=request.user
+        ).exists():
+            raise ValidationError("Можно оставить только один отзыв!")
         return data
 
     class Meta:
